@@ -29,6 +29,10 @@ app.use(
     secret: process.env.SESSION_SECRET || "kambaz",
     resave: false,
     saveUninitialized: false,
+    cookie: {
+      sameSite: process.env.SERVER_ENV === "production" ? "none" : "lax",
+      secure: process.env.SERVER_ENV === "production",
+    },
   })
 );
 
