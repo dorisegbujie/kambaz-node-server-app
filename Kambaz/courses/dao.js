@@ -9,7 +9,8 @@ export const findAllCourses = () =>
 export const findCoursesForEnrolledUser = async (userId) => {
   const enrollments = Database.enrollments.filter((e) => e.user === userId);
   const courseIds = enrollments.map((e) => e.course);
-  return CourseModel.find({ _id: { $in: courseIds } });
+  const courses = await CourseModel.find({}, { name: 1, description: 1 });
+  return courses.filter((c) => courseIds.includes(c._id));
 };
 
 export const createCourse = (course) =>
