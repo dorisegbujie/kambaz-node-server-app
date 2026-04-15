@@ -1,30 +1,27 @@
-import Database from "../Database/index.js";
+import UserModel from "./model.js";
 
-export const createUser = (user) => {
-  Database.users.push(user);
-  return user;
-};
+export const createUser = (user) => UserModel.create(user);
 
-export const findAllUsers = () => Database.users;
+export const findAllUsers = () => UserModel.find();
 
-export const findUserById = (userId) =>
-  Database.users.find((u) => u._id === userId);
+export const findUserById = (userId) => UserModel.findById(userId);
 
 export const findUserByUsername = (username) =>
-  Database.users.find((u) => u.username === username);
+  UserModel.findOne({ username });
 
 export const findUserByCredentials = (username, password) =>
-  Database.users.find((u) => u.username === username && u.password === password);
+  UserModel.findOne({ username, password });
 
-export const updateUser = (userId, user) => {
-  const index = Database.users.findIndex((u) => u._id === userId);
-  if (index === -1) return null;
-  Database.users[index] = { ...Database.users[index], ...user };
-  return Database.users[index];
+export const findUsersByRole = (role) => UserModel.find({ role });
+
+export const findUsersByPartialName = (partialName) => {
+  const regex = new RegExp(partialName, "i");
+  return UserModel.find({
+    $or: [{ firstName: { $regex: regex } }, { lastName: { $regex: regex } }],
+  });
 };
 
-export const deleteUser = (userId) => {
-  const index = Database.users.findIndex((u) => u._id === userId);
-  if (index === -1) return null;
-  Database.users.splice(index, 1);
-};
+export const updateUser = (userId, user) =>
+  UserModel.updateOne({ _id: userId }, { $set: user });
+
+export const deleteUser = (userId) => UserModel.deleteOne({ _id: userId });
