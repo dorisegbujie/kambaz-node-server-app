@@ -1,15 +1,20 @@
-import Database from "../Database/index.js";
-import { v4 as uuidv4 } from "uuid";
+import EnrollmentModel from "./model.js";
 
-export const enrollUserInCourse = (userId, courseId) => {
-  const enrollment = { _id: uuidv4(), user: userId, course: courseId };
-  Database.enrollments.push(enrollment);
-  return enrollment;
+export const findCoursesForUser = async (userId) => {
+  const enrollments = await EnrollmentModel.find({ user: userId }).populate("course");
+  return enrollments.map((e) => e.course);
 };
 
-export const unenrollUserFromCourse = (userId, courseId) => {
-  const index = Database.enrollments.findIndex(
-    (e) => e.user === userId && e.course === courseId
-  );
-  if (index !== -1) Database.enrollments.splice(index, 1);
+export const findUsersForCourse = async (courseId) => {
+  const enrollments = await EnrollmentModel.find({ course: courseId }).populate("user");
+  return enrollments.map((e) => e.user);
 };
+
+export const enrollUserInCourse = (userId, courseId) =>
+  EnrollmentModel.create({ _id: `${userId}-${courseId}`, user: userId, course: courseId });
+
+export const unenrollUserFromCourse = (userId, courseId) =>
+  EnrollmentModel.deleteOne({ user: userId, course: courseId });
+
+export const unenrollAllUsersFromCourse = (courseId) =>
+  EnrollmentModel.deleteMany({ course: courseId });

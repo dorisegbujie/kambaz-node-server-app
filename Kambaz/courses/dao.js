@@ -1,17 +1,8 @@
 import { v4 as uuidv4 } from "uuid";
 import CourseModel from "./model.js";
-import Database from "../Database/index.js";
-import * as enrollmentsDao from "../enrollments/dao.js";
 
 export const findAllCourses = () =>
   CourseModel.find({}, { name: 1, description: 1 });
-
-export const findCoursesForEnrolledUser = async (userId) => {
-  const enrollments = Database.enrollments.filter((e) => e.user === userId);
-  const courseIds = enrollments.map((e) => e.course);
-  const courses = await CourseModel.find({}, { name: 1, description: 1 });
-  return courses.filter((c) => courseIds.includes(c._id));
-};
 
 export const createCourse = (course) =>
   CourseModel.create({ ...course, _id: uuidv4() });
