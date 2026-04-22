@@ -3,6 +3,7 @@ import express from "express";
 import cors from "cors";
 import session from "express-session";
 import mongoose from "mongoose";
+import MongoStore from "connect-mongo";
 import Hello from "./Hello.js";
 import Lab5 from "./Lab5/index.js";
 import KambazRoutes from "./Kambaz/index.js";
@@ -33,6 +34,9 @@ app.use(
     secret: process.env.SESSION_SECRET || "kambaz",
     resave: false,
     saveUninitialized: false,
+    store: MongoStore.create({
+      mongoUrl: process.env.DATABASE_CONNECTION_STRING || "mongodb://127.0.0.1:27017/kambaz",
+    }),
     cookie: {
       sameSite: process.env.SERVER_ENV === "production" ? "none" : "lax",
       secure: process.env.SERVER_ENV === "production",

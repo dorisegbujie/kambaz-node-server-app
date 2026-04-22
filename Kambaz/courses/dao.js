@@ -1,8 +1,7 @@
 import { v4 as uuidv4 } from "uuid";
 import CourseModel from "./model.js";
 
-export const findAllCourses = () =>
-  CourseModel.find({}, { name: 1, description: 1 });
+export const findAllCourses = () => CourseModel.find();
 
 export const createCourse = (course) =>
   CourseModel.create({ ...course, _id: uuidv4() });
