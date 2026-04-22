@@ -1,6 +1,9 @@
 import * as dao from "./dao.js";
 import * as courseDao from "../courses/dao.js";
 import * as enrollmentsDao from "../enrollments/dao.js";
+import Database from "../Database/index.js";
+import CourseModel from "../courses/model.js";
+import EnrollmentModel from "../enrollments/model.js";
 
 export default function UserRoutes(app) {
   const signin = async (req, res) => {
@@ -102,6 +105,30 @@ export default function UserRoutes(app) {
     res.json(newCourse);
   };
 
+  const seedUsers = async (req, res) => {
+    // seed users
+    for (const u of Database.users) {
+      const existing = await dao.findUserByUsername(u.username);
+      if (!existing) await dao.createUser(u);
+    }
+    // seed courses (use fixed _ids from seed data)
+    for (const c of Database.courses) {
+      const existing = await CourseModel.findById(c._id);
+      if (!existing) await CourseModel.create(c);
+    }
+    // seed enrollments
+    for (const e of Database.enrollments) {
+      const existing = await EnrollmentModel.findById(e._id);
+      if (!existing) await EnrollmentModel.create(e);
+    }
+    res.json({
+      users: Database.users.length,
+      courses: Database.courses.length,
+      enrollments: Database.enrollments.length,
+    });
+  };
+
+  app.get("/api/users/seed", seedUsers);
   app.post("/api/users/signin", signin);
   app.post("/api/users/signup", signup);
   app.post("/api/users/signout", signout);

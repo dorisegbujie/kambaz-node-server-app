@@ -1,6 +1,8 @@
+import { v4 as uuidv4 } from "uuid";
 import UserModel from "./model.js";
 
-export const createUser = (user) => UserModel.create(user);
+export const createUser = (user) =>
+  UserModel.create({ _id: uuidv4(), ...user });
 
 export const findAllUsers = () => UserModel.find();
 
